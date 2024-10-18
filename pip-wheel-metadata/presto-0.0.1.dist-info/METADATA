@@ -1,3 +1,29 @@
+Metadata-Version: 2.1
+Name: presto
+Version: 0.0.1
+Summary: Pretrained Remote Sensing Transformer
+Author: Gabriel Tseng
+Author-email: gabrieltseng95@gmail.com
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: Other/Proprietary License
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.9
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: einops==0.6.0
+Requires-Dist: h5py==3.6.0
+Requires-Dist: matplotlib==3.6.2
+Requires-Dist: numpy==1.23.5
+Requires-Dist: torch==2.0
+Requires-Dist: tqdm==4.64.1
+Requires-Dist: webdataset==0.2.31
+Requires-Dist: cropharvest==0.6.0
+Requires-Dist: google-cloud-storage==2.2.1
+Requires-Dist: earthengine-api==0.1.334
+Requires-Dist: hurry.filesize==0.9
+Requires-Dist: openmapflow[data]==0.2.2
+Requires-Dist: rioxarray==0.13.1
+
 # The Pretrained Remote Sensing Transformer (Presto)
 
 This code accompanies our paper, [Lightweight, Pre-trained Transformers for Remote Sensing Timeseries](https://arxiv.org/abs/2304.14065).
@@ -6,7 +32,7 @@ This code accompanies our paper, [Lightweight, Pre-trained Transformers for Remo
 ```bash
 python -m venv venv
 source venv/bin/activate
-pip install - r requirements.txt # ( requirements.txt has -e  in it which builds the package from the current directory)
+pip install -e .
 ```
 [`wandb`](https://pypi.org/project/wandb/) can additionally be installed for full functionality of the `train.py` script.
 
@@ -97,7 +123,7 @@ Diagram: [url](https://docs.google.com/presentation/d/1rxUXdSmKtfHSusBFzG3Apx-pL
 **Prerequisites:**
 - Account with Google Cloud access and Earth Engine access
     ```bash
-    curl -O https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-cli-387.0.0-linux-x86_64.tar.gz # I downloaded the latest version instead
+    curl -O https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-cli-387.0.0-linux-x86_64.tar.gz
     tar -xf google-cloud-cli-387.0.0-linux-x86_64.tar.gz
     exec bash
     ./google-cloud-sdk/install.sh
@@ -106,11 +132,10 @@ Diagram: [url](https://docs.google.com/presentation/d/1rxUXdSmKtfHSusBFzG3Apx-pL
     ```
 - Create buckets for processing
     ```bash
-    gcloud storage buckets create gs://$(python -c "from presto.dataops import EE_BUCKET; print(EE_BUCKET)") --location=us-central1 # updated gcloud commands -- different from the old version
-    gcloud storage buckets create gs://$(python -c "from presto.dataops import NPY_BUCKET; print(NPY_BUCKET)") --location=us-central1
-    gcloud storage buckets create gs://$(python -c "from presto.dataops import TAR_BUCKET; print(TAR_BUCKET)") --location=us-central1
+    gcloud storage mb -l us-central1 $(python -c "from dataops import EE_BUCKET; print(EE_BUCKET)")
+    gcloud storage mb -l us-central1 $(python -c "from dataops import NPY_BUCKET; print(NPY_BUCKET)")
+    gcloud storage mb -l us-central1 $(python -c "from dataops import TAR_BUCKET; print(TAR_BUCKET)")
     ```
-
 - Deploy tif-to-np Cloud Function
     ```bash
     sh scripts/deploy_tif_to_np.sh
